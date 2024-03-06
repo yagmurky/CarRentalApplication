@@ -1,0 +1,3 @@
+rootProject.name = 'CarRentalApplication'
+include 'AuthService'
+
