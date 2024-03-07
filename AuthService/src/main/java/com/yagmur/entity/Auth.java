@@ -1,5 +1,6 @@
 package com.yagmur.entity;
 
+import com.yagmur.utility.CodeGenerator;
 import com.yagmur.utility.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,9 @@ public class Auth extends BaseEntity {
     private String phoneNumber;
     private String email;
     private String idCardUrl;
+    @Builder.Default
+    private String activationCode = CodeGenerator.generateCode();
+
 
     @Builder.Default
     private EStatus status = EStatus.PENDING;

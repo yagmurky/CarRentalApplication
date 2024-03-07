@@ -12,4 +12,6 @@ public class RestApiUrls {
 
     public static final String UPDATE = "/update";
     public static final String DELETE = "/delete";
+    public static final String UPDATE_PASSWORD = "/update-password";
+    public static final String ACTIVATE_STATUS =  "/activate-status";
 }
