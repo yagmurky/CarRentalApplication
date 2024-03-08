@@ -6,6 +6,8 @@ import com.yagmur.dto.request.PasswordUpdateRequestDto;
 import com.yagmur.dto.request.RegisterRequestDto;
 import com.yagmur.dto.response.RegisterResponseDto;
 import com.yagmur.entity.Auth;
+import com.yagmur.exception.AuthManagerException;
+import com.yagmur.exception.ErrorType;
 import com.yagmur.mapper.AuthMapper;
 import com.yagmur.repository.AuthRepository;
 import com.yagmur.utility.CodeGenerator;
@@ -36,10 +38,10 @@ public class AuthService extends ServiceManager<Auth,Long> {
     public Boolean login(LoginRequestDto loginRequestDto){
         Optional<Auth> authOptional=repository.findByUsernameAndPassword(loginRequestDto.getUsername(),loginRequestDto.getPassword());
         if(authOptional.isEmpty()) {
-            return false;
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
         if (!authOptional.get().getStatus().equals(EStatus.ACTIVE)) {
-            throw new RuntimeException("auth not active");
+             throw new AuthManagerException(ErrorType.ACCOUNT_NOT_ACTIVE);
         }
         return true;
     }
@@ -47,7 +49,10 @@ public class AuthService extends ServiceManager<Auth,Long> {
     public Boolean activateStatus(ActivateStatusRequestDto activateStatusRequestDto){
         Optional<Auth> authOptional=repository.findByIdAndActivationCode(activateStatusRequestDto.getAuthId(), activateStatusRequestDto.getActivationCode());
         if(authOptional.isEmpty()) {
-            return false;
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
+        }
+        if (authOptional.get().getActivationCode().equals(activateStatusRequestDto.getActivationCode())) {
+            throw new AuthManagerException(ErrorType.ACTIVATION_CODE_ERROR);
         }
         authOptional.get().setStatus(EStatus.ACTIVE);
         repository.save(authOptional.get());
@@ -56,7 +61,7 @@ public class AuthService extends ServiceManager<Auth,Long> {
     public void delete(Long id){
         Optional<Auth> auth=repository.findById(id);
         if(auth.isEmpty()) {
-            throw new RuntimeException("auth not found");
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }else {
             auth.get().setStatus(EStatus.DELETED);
         }
@@ -66,7 +71,7 @@ public class AuthService extends ServiceManager<Auth,Long> {
     public Boolean updatePassword(PasswordUpdateRequestDto passwordUpdateRequestDto){
         Optional<Auth> authOptional=repository.findByIdAndPassword(passwordUpdateRequestDto.getAuthId(), passwordUpdateRequestDto.getOldPassword());
         if(authOptional.isEmpty()) {
-            return false;
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
         authOptional.get().setPassword(passwordUpdateRequestDto.getNewPassword());
         repository.save(authOptional.get());
@@ -81,7 +86,7 @@ public class AuthService extends ServiceManager<Auth,Long> {
     public Optional<Auth> findById(Long id){
         Optional<Auth> auth=repository.findById(id);
         if (auth.isEmpty()) {
-            throw new RuntimeException("auth not found");
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
         return auth;
     }

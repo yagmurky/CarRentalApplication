@@ -20,16 +20,16 @@ public class Auth extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String username;
     private String password;
+    @Column(unique = true)
     private String tcNo;
     private String phoneNumber;
     private String email;
     private String idCardUrl;
     @Builder.Default
     private String activationCode = CodeGenerator.generateCode();
-
-
     @Builder.Default
     private EStatus status = EStatus.PENDING;
 

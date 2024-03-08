@@ -16,12 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 @Builder
 public class RegisterRequestDto {
 
-    @Column(unique = true)
     @Size(min = 3, max = 8)
     private String username;
     @Size(min = 8, max = 16)
     private String password;
-    @Column(unique = true)
     @Size(min = 11, max = 11)
     private String tcNo;
     @Size(min = 10, max = 10, message = "Başında 0 olmadan lütfen telefon numaranızı yazınız.")
